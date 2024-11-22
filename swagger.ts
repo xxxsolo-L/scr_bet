@@ -10,8 +10,8 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: 'http://localhost:3000', // Замените на ваш адрес
-                description: 'Локальный сервер'
+                url: 'https://scr-bet.onrender.com/api-docs/', // Замените на ваш адрес
+                description: 'Web Service'
             }
         ],
     },
