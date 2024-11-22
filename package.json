@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node server.ts",
     "start": "node dist/server.js",
-    "build": "tsc"
+    "build": "tsc && prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
