@@ -14,14 +14,18 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  username  String?
-  email     String   @unique
-  password  String
-  phone     String?
-  roleId    String   @db.ObjectId // Только ID роли
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  username          String?
+  email             String   @unique
+  password          String
+  phone             String?
+  roleId            String   @db.ObjectId // Только ID роли
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  balanceP          Float    @default(10.0)
+  balanceD          Float    @default(0)
+  isVerified        Boolean  @default(false)
+  verificationToken String?
 
   role      Role?    @relation(fields: [roleId], references: [id]) // Связь с моделью Role
 
@@ -29,7 +33,7 @@ model User {
 
 model Role {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String   @unique // Название роли (например, Admin, User, Guest)
+  name      String   @unique
   users     User[]   // Связь с таблицей User (многие пользователи могут иметь одну роль)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

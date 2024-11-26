@@ -10,7 +10,7 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: 'https://scr-bet.onrender.com/api-docs/', // Замените на ваш адрес
+                url: 'https://scr-bet.onrender.com/api-docs/',
                 description: 'Web Service'
             }
         ],

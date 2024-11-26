@@ -6,6 +6,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerDocs from './swagger'; // Импорт Swagger-документации
 import authRouter from './src/routes/authRouter'
 
+
 dotenv.config();
 const app: Application = express();
 const prisma = new PrismaClient()
