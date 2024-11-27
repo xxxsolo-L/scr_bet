@@ -13,28 +13,97 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum BetStatus {
+  pending
+  won
+  lost
+}
+
+enum EventStatus {
+  upcoming
+  live
+  finished
+}
+
+enum TransactionType {
+  deposit
+  withdrawal
+  bet
+  win
+}
+
 model User {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
   username          String?
   email             String   @unique
   password          String
   phone             String?
-  roleId            String   @db.ObjectId // Только ID роли
+  roleId            String   @db.ObjectId // Связь с ролью
+  balanceP          Float    @default(10.0) // Баланс в очках
+  balanceD          Float    @default(0) // Баланс в деньгах
+  isVerified        Boolean  @default(false) // Подтверждение email
+  verificationToken String? // Токен для верификации
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-  balanceP          Float    @default(10.0)
-  balanceD          Float    @default(0)
-  isVerified        Boolean  @default(false)
-  verificationToken String?
 
-  role      Role?    @relation(fields: [roleId], references: [id]) // Связь с моделью Role
-
+  role         Role?         @relation(fields: [roleId], references: [id]) // Связь с моделью Role
+  bets         Bet[] // Ставки пользователя
+  transactions Transaction[] // Транзакции пользователя
 }
 
 model Role {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String   @unique
-  users     User[]   // Связь с таблицей User (многие пользователи могут иметь одну роль)
+  name      String   @unique // Название роли, например "Admin" или "User"
+  users     User[] // Пользователи с этой ролью
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  name      String // Название события
+  startTime DateTime // Время начала
+  endTime   DateTime // Время окончания
+  status    EventStatus @default(upcoming) // Статус события
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  bets Bet[] // Ставки на событие
+  odds Odds[] // Коэффициенты события
+}
+
+model Bet {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  amount    Float // Сумма ставки
+  type      String // Тип ставки
+  odds      Float // Коэффициенты
+  status    BetStatus @default(pending) // Статус ставки
+  userId    String    @db.ObjectId // ID пользователя
+  eventId   String    @db.ObjectId // ID события
+  createdAt DateTime  @default(now())
+
+  user  User  @relation(fields: [userId], references: [id]) // Пользователь, сделавший ставку
+  event Event @relation(fields: [eventId], references: [id]) // Событие, на которое сделана ставка
+}
+
+model Transaction {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  amount      Float // Сумма транзакции
+  type        TransactionType // Тип транзакции
+  userId      String          @db.ObjectId // ID пользователя
+  description String? // Описание транзакции
+  createdAt   DateTime        @default(now())
+
+  user User @relation(fields: [userId], references: [id]) // Пользователь
+}
+
+model Odds {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId   String   @db.ObjectId // ID события
+  type      String // Тип коэффициента (например, "win", "draw", "loss")
+  value     Float // Значение коэффициента
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id]) // Событие
 }
